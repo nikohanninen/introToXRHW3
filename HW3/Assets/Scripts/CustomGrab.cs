@@ -8,6 +8,7 @@ public class CustomGrab : MonoBehaviour
     // This script should be attached to both controller objects in the scene
     // Make sure to define the input in the editor (LeftHand/Grip and RightHand/Grip recommended respectively)
     CustomGrab otherHand = null;
+    public Hand hand;
     public List<Transform> nearObjects = new List<Transform>();
     public Transform grabbedObject = null;
     public InputActionReference action;
@@ -44,12 +45,20 @@ public class CustomGrab : MonoBehaviour
         grabbing = action.action.IsPressed();
         if (grabbing)
         {
+
             // Grab nearby object or the object in the other hand
             if (!grabbedObject)
                 grabbedObject = nearObjects.Count > 0 ? nearObjects[0] : otherHand.grabbedObject;
 
             if (grabbedObject)
-            {               
+            {
+                Collider[] handColliders = hand.GetComponentsInChildren<Collider>();
+
+                foreach (Collider collider in handColliders)
+                {
+                    Physics.IgnoreCollision(collider, grabbedObject.GetComponent<Collider>());
+                }
+
                 Vector3 deltaPosition = transform.position - previousPosition;
                 Quaternion deltaRotation = transform.rotation * Quaternion.Inverse(previousRotation);
 
@@ -71,7 +80,17 @@ public class CustomGrab : MonoBehaviour
         }
         // If let go of button, release object
         else if (grabbedObject)
+        {
+            Collider[] handColliders = hand.GetComponentsInChildren<Collider>();
+
+            foreach (Collider collider in handColliders)
+            {
+                Physics.IgnoreCollision(collider, grabbedObject.GetComponent<Collider>(), false);
+            }
+
             grabbedObject = null;
+        }
+           
 
         // Should save the current position and rotation here
         previousPosition = transform.position;

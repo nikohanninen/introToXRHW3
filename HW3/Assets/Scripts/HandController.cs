@@ -25,8 +25,6 @@ public class HandController : MonoBehaviour
         float grip = actionGrip.action.ReadValue<float>();
         float trigger = actionTrigger.action.ReadValue<float>();
 
-        Debug.Log("Grip: " + grip);
-
         hand.SetGrip(grip);
         hand.SetTrigger(trigger);
     }
